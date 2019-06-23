@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--配置dao和service共用日志，service就不需要再创建log4j配置文件-->
+    <settings>
+        <setting name="logImpl" value="log4j"/>
+    </settings>
+</configuration>

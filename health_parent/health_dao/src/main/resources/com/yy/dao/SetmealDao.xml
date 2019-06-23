@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yy.dao.SetmealDao">
+    <insert id="addSetmeal" parameterType="setmeal">
+        <selectKey resultType="int" keyProperty="id" keyColumn="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+       insert into t_setmeal (name, code, helpCode, sex, age, price, remark, attention, img)
+       values
+       (#{name}, #{code}, #{helpCode}, #{sex}, #{age}, #{price}, #{remark}, #{attention}, #{img})
+    </insert>
+
+    <insert id="addSC" parameterType="int" >
+        insert into t_setmeal_checkgroup (setmeal_id, checkgroup_id) values (#{param1},#{param2})
+    </insert>
+
+    <select id="findString" parameterType="string" resultType="Setmeal">
+        select * from t_setmeal
+        <if test="value !=null and value.length > 0">
+            where code = #{value} or name = #{value} or helpCode = #{value}
+        </if>
+    </select>
+
+    <select id="findAll" resultType="setmeal">
+        select * from t_setmeal
+    </select>
+
+    <resultMap id="baseMap" type="setmeal">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="age" property="age"></result>
+        <result column="price" property="price"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <result column="img" property="img"></result>
+    </resultMap>
+    <resultMap id="findByIdMap" type="setmeal" extends="baseMap">
+        <collection property="checkGroups" ofType="CheckGroup" column="id" select="com.yy.dao.CheckGroupDao.findCheckGroupBySetMealId"></collection>
+    </resultMap>
+    <select id="findById" parameterType="int" resultMap="findByIdMap">
+        select * from t_setmeal where id =#{id}
+    </select>
+
+    <select id="findsetmealCount" resultType="map">
+        select count(0) value ,s.name  from t_order o,t_setmeal s where s.id=o.setmeal_id  group by setmeal_id
+    </select>
+    <select id="findHotSetmeal" resultType="map" >
+        select count(1) setmeal_count,s.name,count(1)/(select count(1)  from t_order) proportion
+        from t_order o, t_setmeal s where o.setmeal_id = s.id group by o.setmeal_id
+        order by  setmeal_count desc limit 0,3
+    </select>
+</mapper>
